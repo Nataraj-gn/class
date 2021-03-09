@@ -14,7 +14,7 @@ import (
 func API(build string, shutdown chan os.Signal, log *log.Logger) *httptreemux.ContextMux {
 	mux := httptreemux.NewContextMux()
 
-	mux.Handle(http.MethodGet, "/test", readiness)
+	mux.Handle(http.MethodGet, "/readiness", readiness)
 
 	return mux
 }
