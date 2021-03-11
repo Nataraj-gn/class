@@ -5,6 +5,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"syscall"
 	"time"
 
 	"github.com/dimfeld/httptreemux"
@@ -46,6 +47,12 @@ func NewApp(shutdown chan os.Signal, mw ...Middleware) *App {
 	}
 }
 
+// SignalShutdown is used to gracefully shutdown the app when an integrity
+// issue is identified.
+func (a *App) SignalShutdown() {
+	a.shutdown <- syscall.SIGTERM
+}
+
 // Handle sets a handler function for a given HTTP method and path pair
 // to the application server mux.
 func (a *App) Handle(method string, path string, handler Handler, mw ...Middleware) {
@@ -67,11 +74,9 @@ func (a *App) Handle(method string, path string, handler Handler, mw ...Middlewa
 		ctx := context.WithValue(r.Context(), KeyValues, &v)
 
 		if err := handler(ctx, w, r); err != nil {
-			// TODO: WHAT TO DO??? ERROR
+			a.SignalShutdown()
 			return
 		}
-
-		// INJECT CODE,
 	}
 
 	a.ContextMux.Handle(method, path, h)
