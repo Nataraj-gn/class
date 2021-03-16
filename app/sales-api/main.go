@@ -19,7 +19,7 @@ import (
 )
 
 /*
-Next Step: Create a Key Store.
+Next Step: Unit Test Auth, Create a Key Store.
 
 Need to figure out timeouts for http service.
 You might want to reset your DB_HOST env var during test tear down.
