@@ -62,6 +62,7 @@ func gentoken() error {
 
 	method := jwt.GetSigningMethod("RS256")
 	token := jwt.NewWithClaims(method, claims)
+	token.Header["kid"] = "45678"
 
 	str, err := token.SignedString(privateKey)
 	if err != nil {
@@ -71,6 +72,35 @@ func gentoken() error {
 	fmt.Println("***** START TOKEN *****")
 	fmt.Println(str)
 	fmt.Println("***** END TOKEN *****")
+
+	// Create the token parser to use. The algorithm used to sign the JWT must be
+	// validated to avoid a critical vulnerability:
+	// https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/
+	parser := jwt.NewParser(jwt.WithValidMethods([]string{"RS256"}), jwt.WithAudience("student"))
+
+	var claimsCheck struct {
+		jwt.StandardClaims
+		Roles []string
+	}
+
+	keyFunc := func(t *jwt.Token) (interface{}, error) {
+		kid := t.Header["kid"]
+		fmt.Println("*****>", kid)
+		return &privateKey.PublicKey, nil
+	}
+
+	parsedToken, err := parser.ParseWithClaims(str, &claimsCheck, keyFunc)
+	if err != nil {
+		return err
+	}
+
+	if !parsedToken.Valid {
+		return errors.New("invalid token")
+	}
+
+	fmt.Println("****** CLAIMS ******")
+	fmt.Printf("%+v\n", claimsCheck)
+	fmt.Println("****** CLAIMS ******")
 
 	return nil
 }
