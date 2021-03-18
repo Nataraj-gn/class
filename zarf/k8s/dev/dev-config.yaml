@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
+  db_host: 0.0.0.0
   db_password: postgres

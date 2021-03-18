@@ -17,11 +17,47 @@ spec:
       containers:
       - name: app
         image: sales-api-amd64:1.0
+        env:
+        - name: SALES_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: db_host
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: KUBERNETES_PODNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBERNETES_NAMESPACE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KUBERNETES_NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         ports:
         - name: app
           containerPort: 3000
         - name: app-debug
           containerPort: 4000
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /liveness
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          timeoutSeconds: 5
 ---
 apiVersion: v1
 kind: Service

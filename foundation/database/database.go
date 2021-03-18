@@ -2,15 +2,14 @@
 package database
 
 import (
+	_ "github.com/lib/pq" // Initialize the database driver.
+
 	"context"
+	"errors"
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
-
-	_ "github.com/jackc/pgx/v4" // Initialize the database driver.
-
-	"errors"
-	"net/url"
 
 	"github.com/jmoiron/sqlx"
 )
