@@ -51,6 +51,10 @@ kind-status:
 # ==============================================================================
 # Module Maintence
 
+test:
+	go test ./... -count=1
+	staticcheck ./...
+
 admin:
 	go run app/admin/main.go
 
