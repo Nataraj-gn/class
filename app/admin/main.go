@@ -30,7 +30,7 @@ func run(log *log.Logger) error {
 }
 
 func gentoken() error {
-	privatePEM, err := ioutil.ReadFile("./private.pem")
+	privatePEM, err := ioutil.ReadFile("zarf/keys/54bb2165-71e1-41a6-af3e-7da4a0e1e2c1.pem")
 	if err != nil {
 		return errors.Wrap(err, "reading PEM private key file")
 	}
@@ -62,7 +62,7 @@ func gentoken() error {
 
 	method := jwt.GetSigningMethod("RS256")
 	token := jwt.NewWithClaims(method, claims)
-	token.Header["kid"] = "45678"
+	token.Header["kid"] = "54bb2165-71e1-41a6-af3e-7da4a0e1e2c1"
 
 	str, err := token.SignedString(privateKey)
 	if err != nil {

@@ -15,6 +15,8 @@ import (
 
 	"github.com/ardanlabs/conf"
 	"github.com/ardanlabs/service/app/sales-api/handlers"
+	"github.com/ardanlabs/service/business/auth"
+	"github.com/ardanlabs/service/foundation/keystore"
 	"github.com/pkg/errors"
 )
 
@@ -52,6 +54,10 @@ func run(log *log.Logger) error {
 			ReadTimeout     time.Duration `conf:"default:5s"`
 			WriteTimeout    time.Duration `conf:"default:5s"`
 			ShutdownTimeout time.Duration `conf:"default:5s,noprint"`
+		}
+		Auth struct {
+			KeysFolder string `conf:"default:zarf/keys/"`
+			Algorithm  string `conf:"default:RS256"`
 		}
 	}
 	cfg.Version.SVN = build
@@ -91,6 +97,23 @@ func run(log *log.Logger) error {
 	log.Printf("main: Config:\n%v\n", out)
 
 	// =========================================================================
+	// Initialize authentication support
+
+	log.Println("main: Started: Initializing authentication support")
+
+	// Construct a key store based on the key files stored in
+	// the specified directory.
+	ks, err := keystore.NewFS(os.DirFS(cfg.Auth.KeysFolder))
+	if err != nil {
+		return errors.Wrap(err, "reading keys")
+	}
+
+	auth, err := auth.New(cfg.Auth.Algorithm, ks)
+	if err != nil {
+		return errors.Wrap(err, "constructing auth")
+	}
+
+	// =========================================================================
 	// Start Debug Service
 	//
 	// /debug/pprof - Added to the default mux by importing the net/http/pprof package.
@@ -119,7 +142,7 @@ func run(log *log.Logger) error {
 
 	api := http.Server{
 		Addr:         cfg.Web.APIHost,
-		Handler:      handlers.API(build, shutdown, log),
+		Handler:      handlers.API(build, shutdown, log, auth),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 	}
