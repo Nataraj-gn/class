@@ -1,6 +1,8 @@
 # github.com/ardanlabs/conf v1.3.4
 ## explicit
 github.com/ardanlabs/conf
+# github.com/davecgh/go-spew v1.1.1
+## explicit
 # github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 ## explicit
 github.com/dgrijalva/jwt-go/v4
@@ -18,27 +20,6 @@ github.com/go-playground/universal-translator
 # github.com/google/uuid v1.2.0
 ## explicit
 github.com/google/uuid
-# github.com/jackc/chunkreader/v2 v2.0.1
-github.com/jackc/chunkreader/v2
-# github.com/jackc/pgconn v1.8.0
-github.com/jackc/pgconn
-github.com/jackc/pgconn/internal/ctxwatch
-github.com/jackc/pgconn/stmtcache
-# github.com/jackc/pgio v1.0.0
-github.com/jackc/pgio
-# github.com/jackc/pgpassfile v1.0.0
-github.com/jackc/pgpassfile
-# github.com/jackc/pgproto3/v2 v2.0.6
-github.com/jackc/pgproto3/v2
-# github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b
-github.com/jackc/pgservicefile
-# github.com/jackc/pgtype v1.6.2
-github.com/jackc/pgtype
-# github.com/jackc/pgx/v4 v4.10.1
-## explicit
-github.com/jackc/pgx/v4
-github.com/jackc/pgx/v4/internal/sanitize
-github.com/jackc/pgx/v4/stdlib
 # github.com/jmoiron/sqlx v1.3.1
 ## explicit
 github.com/jmoiron/sqlx
@@ -48,28 +29,12 @@ github.com/jmoiron/sqlx/reflectx
 github.com/leodido/go-urn
 # github.com/lib/pq v1.10.0
 ## explicit
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-golang.org/x/crypto/pbkdf2
-# golang.org/x/text v0.3.3
-golang.org/x/text/cases
-golang.org/x/text/internal
-golang.org/x/text/internal/language
-golang.org/x/text/internal/language/compact
-golang.org/x/text/internal/tag
-golang.org/x/text/language
-golang.org/x/text/runes
-golang.org/x/text/secure/bidirule
-golang.org/x/text/secure/precis
-golang.org/x/text/transform
-golang.org/x/text/unicode/bidi
-golang.org/x/text/unicode/norm
-golang.org/x/text/width
-# golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
-golang.org/x/xerrors
-golang.org/x/xerrors/internal
 # gopkg.in/go-playground/assert.v1 v1.2.1
 ## explicit
 # gopkg.in/go-playground/validator.v9 v9.31.0

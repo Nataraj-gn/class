@@ -2,7 +2,7 @@
 package database
 
 import (
-	_ "github.com/jackc/pgx/v4/stdlib" // Initialize the database driver.
+	_ "github.com/lib/pq" // Calls init function.
 
 	"context"
 	"errors"
