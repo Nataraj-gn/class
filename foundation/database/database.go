@@ -47,7 +47,7 @@ func Open(cfg Config) (*sqlx.DB, error) {
 		RawQuery: q.Encode(),
 	}
 
-	return sqlx.Open("pgx", u.String())
+	return sqlx.Open("postgres", u.String())
 }
 
 // NamedQuerySlice is a helper function for executing queries that return a
