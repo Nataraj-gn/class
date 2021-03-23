@@ -46,15 +46,15 @@ spec:
           containerPort: 4000
         readinessProbe:
           httpGet:
-            path: /readiness
-            port: 3000
+            path: /debug/readiness
+            port: 4000
           initialDelaySeconds: 30
           periodSeconds: 15
           timeoutSeconds: 5
         livenessProbe:
           httpGet:
-            path: /liveness
-            port: 3000
+            path: /debug/liveness
+            port: 4000
           initialDelaySeconds: 15
           periodSeconds: 15
           timeoutSeconds: 5

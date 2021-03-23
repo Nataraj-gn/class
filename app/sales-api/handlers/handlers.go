@@ -19,8 +19,8 @@ func API(build string, shutdown chan os.Signal, log *log.Logger, a *auth.Auth, d
 
 	cg := checkGroup{build: build, db: db}
 	app.Handle(http.MethodGet, "/test", cg.test, mid.Authenticate(a), mid.Authorize(auth.RoleAdmin))
-	app.Handle(http.MethodGet, "/readiness", cg.readiness)
-	app.Handle(http.MethodGet, "/liveness", cg.liveness)
+	app.HandleDebug(http.MethodGet, "/readiness", cg.readiness)
+	app.HandleDebug(http.MethodGet, "/liveness", cg.liveness)
 
 	return app
 }
