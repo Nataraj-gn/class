@@ -2,6 +2,8 @@
 package database
 
 import (
+	"time"
+
 	_ "github.com/lib/pq" // Calls init function.
 
 	"context"
@@ -97,10 +99,26 @@ func NamedQueryStruct(ctx context.Context, db *sqlx.DB, query string, data inter
 // returns a non-nil error otherwise.
 func StatusCheck(ctx context.Context, db *sqlx.DB) error {
 
-	// Run a simple query to determine connectivity. The db has a "Ping" method
-	// but it can false-positive when it was previously able to talk to the
-	// database but the database has since gone away. Running this query forces a
-	// round trip to the database.
+	// First check we can ping the database.
+	var pingError error
+	for attempts := 1; ; attempts++ {
+		pingError = db.Ping()
+		if pingError == nil {
+			break
+		}
+		time.Sleep(time.Duration(attempts) * 100 * time.Millisecond)
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+	}
+
+	// Make sure we didn't timeout or be cancelled.
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
+	// Run a simple query to determine connectivity. Running this query forces a
+	// round trip through the database.
 	const q = `SELECT true`
 	var tmp bool
 	return db.QueryRowContext(ctx, q).Scan(&tmp)

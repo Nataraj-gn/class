@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/ardanlabs/service/business/validate"
 	"github.com/ardanlabs/service/foundation/database"
@@ -22,6 +23,9 @@ type checkGroup struct {
 // Do not respond by just returning an error because further up in the call
 // stack it will interpret that as a non-trusted error.
 func (cg checkGroup) readiness(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+
 	status := "ok"
 	statusCode := http.StatusOK
 	if err := database.StatusCheck(ctx, cg.db); err != nil {
