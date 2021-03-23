@@ -22,6 +22,8 @@ import (
 )
 
 /*
+Next Step: Add Docker and Unit Testing Support. Write Unit Tests For User
+
 Need to figure out timeouts for http service.
 You might want to reset your DB_HOST env var during test tear down.
 Service should start even without a DB running yet.
