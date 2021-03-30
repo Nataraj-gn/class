@@ -16,9 +16,12 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// Set of error variables for CRUD operations.
 var (
-	// ErrNotFound is used when a query is performed with no data.
-	ErrNotFound = errors.New("not found")
+	ErrNotFound              = errors.New("not found")
+	ErrInvalidID             = errors.New("ID is not in its proper form")
+	ErrAuthenticationFailure = errors.New("authentication failed")
+	ErrForbidden             = errors.New("attempted action is not allowed")
 )
 
 // Config is the required properties to use the database.

@@ -15,14 +15,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Set of error variables for CRUD operations.
-var (
-	ErrNotFound              = errors.New("not found")
-	ErrInvalidID             = errors.New("ID is not in its proper form")
-	ErrAuthenticationFailure = errors.New("authentication failed")
-	ErrForbidden             = errors.New("attempted action is not allowed")
-)
-
 // Store manages the set of API's for user access.
 type Store struct {
 	log *log.Logger
@@ -78,7 +70,7 @@ func (s Store) Create(ctx context.Context, traceID string, nu NewUser, now time.
 // Update replaces a user document in the database.
 func (s Store) Update(ctx context.Context, traceID string, claims auth.Claims, userID string, uu UpdateUser, now time.Time) error {
 	if err := validate.CheckID(userID); err != nil {
-		return ErrInvalidID
+		return database.ErrInvalidID
 	}
 	if err := validate.Check(uu); err != nil {
 		return errors.Wrap(err, "validating data")
@@ -133,12 +125,12 @@ func (s Store) Update(ctx context.Context, traceID string, claims auth.Claims, u
 // Delete removes a user from the database.
 func (s Store) Delete(ctx context.Context, traceID string, claims auth.Claims, userID string) error {
 	if err := validate.CheckID(userID); err != nil {
-		return ErrInvalidID
+		return database.ErrInvalidID
 	}
 
 	// If you are not an admin and looking to delete someone other than yourself.
 	if !claims.Authorized(auth.RoleAdmin) && claims.Subject != userID {
-		return ErrForbidden
+		return database.ErrForbidden
 	}
 
 	data := struct {
@@ -190,7 +182,7 @@ func (s Store) Query(ctx context.Context, traceID string, pageNumber int, rowsPe
 	var users []User
 	if err := database.NamedQuerySlice(ctx, s.db, q, data, &users); err != nil {
 		if err == database.ErrNotFound {
-			return nil, ErrNotFound
+			return nil, database.ErrNotFound
 		}
 		return nil, errors.Wrap(err, "selecting users")
 	}
@@ -201,12 +193,12 @@ func (s Store) Query(ctx context.Context, traceID string, pageNumber int, rowsPe
 // QueryByID gets the specified user from the database.
 func (s Store) QueryByID(ctx context.Context, traceID string, claims auth.Claims, userID string) (User, error) {
 	if err := validate.CheckID(userID); err != nil {
-		return User{}, ErrInvalidID
+		return User{}, database.ErrInvalidID
 	}
 
 	// If you are not an admin and looking to retrieve someone other than yourself.
 	if !claims.Authorized(auth.RoleAdmin) && claims.Subject != userID {
-		return User{}, ErrForbidden
+		return User{}, database.ErrForbidden
 	}
 
 	data := struct {
@@ -230,7 +222,7 @@ func (s Store) QueryByID(ctx context.Context, traceID string, claims auth.Claims
 	var usr User
 	if err := database.NamedQueryStruct(ctx, s.db, q, data, &usr); err != nil {
 		if err == database.ErrNotFound {
-			return User{}, ErrNotFound
+			return User{}, database.ErrNotFound
 		}
 		return User{}, errors.Wrapf(err, "selecting user %q", data.UserID)
 	}
@@ -267,14 +259,14 @@ func (s Store) QueryByEmail(ctx context.Context, traceID string, claims auth.Cla
 	var usr User
 	if err := database.NamedQueryStruct(ctx, s.db, q, data, &usr); err != nil {
 		if err == database.ErrNotFound {
-			return User{}, ErrNotFound
+			return User{}, database.ErrNotFound
 		}
 		return User{}, errors.Wrapf(err, "selecting user %q", email)
 	}
 
 	// If you are not an admin and looking to retrieve someone other than yourself.
 	if !claims.Authorized(auth.RoleAdmin) && claims.Subject != usr.ID {
-		return User{}, ErrForbidden
+		return User{}, database.ErrForbidden
 	}
 
 	return usr, nil
@@ -305,7 +297,7 @@ func (s Store) Authenticate(ctx context.Context, traceID string, now time.Time, 
 	var usr User
 	if err := database.NamedQueryStruct(ctx, s.db, q, data, &usr); err != nil {
 		if err == database.ErrNotFound {
-			return auth.Claims{}, ErrNotFound
+			return auth.Claims{}, database.ErrNotFound
 		}
 		return auth.Claims{}, errors.Wrapf(err, "selecting user %q", email)
 	}
@@ -313,7 +305,7 @@ func (s Store) Authenticate(ctx context.Context, traceID string, now time.Time, 
 	// Compare the provided password with the saved hash. Use the bcrypt
 	// comparison function so it is cryptographically secure.
 	if err := bcrypt.CompareHashAndPassword(usr.PasswordHash, []byte(password)); err != nil {
-		return auth.Claims{}, ErrAuthenticationFailure
+		return auth.Claims{}, database.ErrAuthenticationFailure
 	}
 
 	// If we are this far the request is valid. Create some claims for the user
